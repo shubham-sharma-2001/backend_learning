@@ -1,10 +1,35 @@
-import React from 'react';
-
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 const About = () => {
+  const navigate = useNavigate();
+  const callAboutPage = async () => {
+    try {
+      const res = await fetch('/about', {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+      const data = await res.json();
+      console.log(data);
+      if (!res.status === 200) {
+        const err = new Error(res.error);
+        throw err;
+      }
+    } catch (err) {
+      console.log(err);
+      navigate('/login');
+    }
+  };
+  useEffect(() => {
+    callAboutPage();
+  }, []);
   return (
     <div>
       <div className="container emp-profile">
-        <form method="">
+        <form method="GET">
           <div className="row">
             <div className="col-md-4">
               <div className="profile-img">

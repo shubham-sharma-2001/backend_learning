@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import '../Components/Signup.css';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import Swal from 'sweetalert2';
 
 const Signup = () => {
   // const history = useHistory();
@@ -15,36 +17,56 @@ const Signup = () => {
   });
   let name, value;
   const handleInputs = (e) => {
+    console.log(e);
     name = e.target.name;
     value = e.target.value;
     SetUser({ ...user, [name]: value });
   };
 
-  const postdata = async (e) => {
+  // const postdata = async (e) => {
+  //   e.preventDefault();
+  //   const { name, email, phone, work, password, cpassword } = user;
+  //   const res = await fetch('/register', {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: JSON.stringify({
+  //       name,
+  //       email,
+  //       phone,
+  //       work,
+  //       password,
+  //       cpassword,
+  //     }),
+  //   });
+  //   const data = await res.json();
+  //   if (data.status === 200 || data) {
+  //     // window.alert('Invalid registration');
+  //     window.alert(data.message);
+  //     navigate('/signin');
+  //     // console.log('Invalid registration');
+  //   } else {
+  //     // window.alert('Done registration');
+  //     window.alert(data.message);
+
+  //     // console.log('Suuccess registration');
+  //   }
+  // };
+
+  const postdata = async(e) => {
     e.preventDefault();
     const { name, email, phone, work, password, cpassword } = user;
-    const res = await fetch('/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        name,
-        email,
-        phone,
-        work,
-        password,
-        cpassword,
-      }),
-    });
-    const data = await res.json();
-    if (data.status === 422 || !data) {
-      window.alert('Invalid registration');
-      console.log('Invalid registration');
-    } else {
-      window.alert('Done registration');
-      console.log('Suuccess registration');
-      navigate.push('./login');
+    console.log(user);
+    if (name && email && phone && work && password === cpassword) {
+      await axios.post('http://localhost:7000/register', user).then((res) => {
+        if (res.status === 200) {
+          Swal.fire(res.data.message);
+          navigate('/signin');
+        } else if (res.status === 422 || res.status === 400) {
+          Swal.fire(res.data.message);
+        }
+      });
     }
   };
 
@@ -55,7 +77,12 @@ const Signup = () => {
           <div className="header">
             <h1>Create an Account</h1>
           </div>
-          <form method="post" className="register-form" id="register-form">
+          <form
+            onSubmit={postdata}
+            method="POST"
+            className="register-form"
+            id="register-form"
+          >
             <div className="input">
               <i class="fa-solid fa-user-tie"></i>
 
@@ -136,7 +163,7 @@ const Signup = () => {
               value="Register"
               name="signup"
               id="signup"
-              onClick={postdata}
+              // onClick={postdata}
             />
           </form>
 

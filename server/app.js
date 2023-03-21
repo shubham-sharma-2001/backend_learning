@@ -1,7 +1,8 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const app = express();
-
+const cors = require('cors');
+const cookieParser = require('cookie-parser');
 dotenv.config({ path: './config.env' });
 
 //importing the port number from config.env.
@@ -13,13 +14,21 @@ require('./db/conn');
 //getting data in form of json(bcon - > json)
 app.use(express.json());
 // we link the router files
+app.use(
+  cors({
+    option: {
+      origin: 'http://localhost:3000/',
+    },
+  })
+);
+app.use(cookieParser());
 app.use(require('./router/auth.js'));
 
 // MiddleWare
-const middleware = (req, res, next) => {
-  console.log('hello this is middleware');
-  next();
-};
+// const middleware = (req, res, next) => {
+//   console.log('hello this is middleware');
+//   next();
+// };
 
 // Routing
 
@@ -27,10 +36,10 @@ const middleware = (req, res, next) => {
 //   res.send('Hello World from the server app.js');
 // });
 
-app.get('/about', middleware, (req, res) => {
-  console.log('hello this is about of middleware ');
-  res.send('Hello about');
-});
+// app.get('/about', middleware, (req, res) => {
+//   console.log('hello this is about of middleware ');
+//   res.send('Hello about');
+// });
 
 app.get('/contact', (req, res) => {
   res.send('Hello contact');
